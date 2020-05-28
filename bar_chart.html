@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Visualization Projects - Visualize Data with a Bar Chart</title>
+    <style>
+        body{
+            text-align: center;
+        }
+        .bar{
+            fill: blue;
+            cursor: pointer;
+        }
+        .bar:hover{
+            fill:black;
+        }
+        .tooltip {	
+        position: absolute;			
+        text-align: center;			
+        width: 100px;					
+        height: 30px;					
+        padding: 2px;				
+        font: 12px sans-serif;		
+        background: lightsteelblue;	
+        border: 0px;		
+        border-radius: 8px;			
+        pointer-events: none;			
+}
+
+    </style>
+</head>
+<body>
+    <h1 id="title">United States GDP</h1>
+    <div id="bar_char"></div>
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <script src="https://cdn.freecodecamp.org/testable-projects-fcc/v1/bundle.js"></script>
+    <script src="bar_chart.js"></script>
+</body>
+</html>
