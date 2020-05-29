@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Visualization Projects - Visualize Data with a Bar Chart</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <style>
+        body{
+            text-align: center;
+        }
+        .dot{
+            cursor: pointer;
+        }
+        .dopping_dot{
+            fill: red;
+            stroke: blue;
+        }
+        .dot:hover{
+            fill:blue;
+        }
+        .tooltip {	
+        position: absolute;			
+        text-align: center;								
+        padding: 10px;				
+        font: 11px sans-serif;		
+        background: lightsteelblue;	
+        border: 0px;		
+        border-radius: 3px;			
+        pointer-events: none;			
+}
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 id="title">Visualize Data with a Heat Map</h1>
+        <h3 id="description">1753 - 2015: base temperature 8.66℃</h3>
+        <div id="scatterplot_graph"></div>
+    </div>
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <script src="https://d3js.org/d3-time-format.v2.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-legend/2.25.6/d3-legend.min.js"></script>
+    <script src="https://cdn.freecodecamp.org/testable-projects-fcc/v1/bundle.js"></script>
+    <script src="heat_map.js"></script>
+</body>
+</html>
