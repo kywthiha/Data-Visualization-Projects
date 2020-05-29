@@ -1,11 +1,10 @@
 fetch('https://raw.githubusercontent.com/freeCodeCamp/ProjectReferenceData/master/GDP-data.json')
   .then(response => response.json())
   .then(data => {
-      const width = 1000,height = 600,padding = 60
+      const width = 800,height = 450,padding = 60
       const svg = d3.select('#bar_char')
       .append('svg')
-      .attr('width',width)
-      .attr('height',height)
+      .attr("viewBox", `0 0 ${width} ${height}`)
       .style('background-color','pink');
 
       svg
@@ -63,10 +62,6 @@ fetch('https://raw.githubusercontent.com/freeCodeCamp/ProjectReferenceData/maste
       const yScale = d3.scaleLinear()
       .domain([0,maxgdp])
       .range([height-padding,padding])
-
-      const yScaleReact = d3.scaleLinear()
-      .domain([mingdp,maxgdp])
-      .range([padding,height-padding])
 
       const xScale = d3.scaleTime()
       .domain([new Date(mindate),new Date(maxdate)])

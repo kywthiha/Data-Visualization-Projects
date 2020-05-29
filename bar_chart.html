@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+
     <title>Data Visualization Projects - Visualize Data with a Bar Chart</title>
     <style>
         body{
@@ -17,9 +19,7 @@
         }
         .tooltip {	
         position: absolute;			
-        text-align: center;			
-        width: 100px;					
-        height: 30px;					
+        text-align: center;								
         padding: 2px;				
         font: 12px sans-serif;		
         background: lightsteelblue;	
@@ -31,8 +31,10 @@
     </style>
 </head>
 <body>
-    <h1 id="title">United States GDP</h1>
-    <div id="bar_char"></div>
+    <div class="container">
+        <h1 id="title">United States GDP</h1>
+        <div id="bar_char"></div>
+    </div>
     <script src="https://d3js.org/d3.v5.min.js"></script>
     <script src="https://cdn.freecodecamp.org/testable-projects-fcc/v1/bundle.js"></script>
     <script src="bar_chart.js"></script>
