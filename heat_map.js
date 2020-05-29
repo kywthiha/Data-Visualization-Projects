@@ -64,7 +64,9 @@ fetch('https://raw.githubusercontent.com/freeCodeCamp/ProjectReferenceData/maste
   
         const mouseover = function(d) {
           Tooltip
-            .html(`${d.variance+data.baseTemperature}`)
+            .html(`${d.year},${d3.timeFormat("%B")(new Date(1970, d.month-1,1 , 0))} <br>Temp: <i style="color:blue;">${(d.variance+data.baseTemperature).toFixed(2)}</i><br>
+            <strong>Variance : <span style="color:blue;"> ${d.variance.toFixed(2)} </span></strong>
+            `)
             .attr('data-year',d.year)
             .style("opacity", 1)
           d3.select(this)
