@@ -1,104 +1,93 @@
-fetch('https://raw.githubusercontent.com/freeCodeCamp/ProjectReferenceData/master/GDP-data.json')
-  .then(response => response.json())
-  .then(data => {
-      const width = 800,height = 450,padding = 60
-      const svg = d3.select('#bar_char')
-      .append('svg')
-      .attr("viewBox", `0 0 ${width} ${height}`)
-      .style('background-color','pink');
+const render = (data)=>{
+const width = 800
+const height = 500
+const template = "#bar_char"
+const margin = { top :20 , bottom : 30 , left: 50 , right : 50 }
+const innerWidth = width - margin.left - margin.right
+const innerHeight = height - margin.bottom - margin.top
+const xValue = (d,i)=>(d[0])
+const yValue = (d,i)=>(d[1])
 
-      svg
-      .append('text')
-      .text('Gross Domestic Product')
-      .attr('x',-height/2)
-      .attr('y',padding+30)
-      .attr("transform", "rotate(-90)")
+const svg = d3.select(template).append('svg')
+svg.attr('width',width)
+    .attr('height',height)
+const rectGroup = svg.append('g')
 
-      svg
-      .append('text')
-      .text('More Information: http://www.bea.gov/national/pdf/nipaguid.pdf')
-      .attr('x',width-padding*8)
-      .attr('y',height-padding+40)
+const xScale = d3.scaleBand()
+    .domain(data.map(xValue))
+    .range([0,innerWidth])
+    .padding(0.2)
 
-      const dataset = data.data
-      const maxdate = d3.max(dataset,(d)=>d[0])
-      const mindate = d3.min(dataset,(d)=>d[0])
-      const maxgdp = d3.max(dataset,(d)=>d[1])
-      const mingdp = d3.min(dataset,(d)=>d[1])
+const  xScaleTime = d3.scaleTime()
+    .domain([d3.min(data,(d,i)=>new Date(xValue(d,i))), d3.max(data,(d,i)=>new Date(xValue(d,i)))])
+    .range([0,innerWidth]);
+const  xAxis = d3.axisBottom(xScaleTime)
+const xAxisGroup = svg.append('g')
+.attr('id','x-axis')
+.attr('transform',`translate(${margin.left},${innerHeight+margin.top})`)
+.call(xAxis)
 
-      const Tooltip = d3.select("#bar_char")
-      .append("div")
-      .style("opacity", 0)
-      .attr('id','tooltip')
-      .attr("class", "tooltip")
-      .style("background-color", "white")
-      .style("border", "solid")
-      .style("border-width", "2px")
-      .style("border-radius", "5px")
-      .style("padding", "5px")
+const yScale = d3.scaleLinear()
+    .domain([0,d3.max(data,yValue)])
+    .range([innerHeight,0])
 
-      const mouseover = function(d) {
-        Tooltip
-          .style("opacity", 1)
-          .attr('data-date',d[0])
-        d3.select(this)
-          .style("stroke", "black")
-          .style("opacity", 1)
-      }
-      const mousemove = function(d) {
-        Tooltip
-          .html(`${new Date(d[0]).toDateString()}<br>$ ${d[1]} Billions`)
-          .style("left", (d3.event.pageX)+10 + "px")
-          .style("top", (d3.event.pageY)-3 + "px")
-      }
-      const mouseleave = function(d) {
-        Tooltip
-          .style("opacity", 0)
-        d3.select(this)
-          .style("stroke", "none")
-          .style("opacity", 0.8)
-      }
+const  yAxis = d3.axisLeft(yScale);
+const yAxisGroup = svg.append('g')
+.attr('id','y-axis')
+.attr('transform',`translate(${margin.left},${margin.top})`)
+.call(yAxis)
+rectGroup.attr('transform',`translate(${margin.left},0)`)
 
-      const yScale = d3.scaleLinear()
-      .domain([0,maxgdp])
-      .range([height-padding,padding])
+const Tooltip = d3.select(template)
+.append("div")
+.style("opacity", 0)
+.attr('id','tooltip')
+.attr("class", "tooltip")
 
-      const xScale = d3.scaleTime()
-      .domain([new Date(mindate),new Date(maxdate)])
-      .range([padding,width-padding])
+const mouseover = function(d,i) {
+  Tooltip
+    .html(`GDP : ${yValue(d,i)} <br> Year : ${xValue(d,i)}`)
+    .attr('data-date',xValue(d,i))
+    .style("opacity", 1)
+  d3.select(this)
+    .style("stroke", "black")
+    .style("opacity", 1)
+}
+const mousemove = function(d) {
+  Tooltip
+    .style("left", (d3.event.pageX)+10 + "px")
+    .style("top", (d3.event.pageY)-3 + "px")
+}
+const mouseleave = function(d) {
+  Tooltip
+    .style("opacity", 0)
+  d3.select(this)
+    .style("stroke", "none")
+    .style("opacity", 0.8)
+}
 
-      const yaxis = d3.axisLeft(yScale);
-      svg.append("g")
-      .attr('id',"y-axis")
-      .attr("transform", `translate(${padding},0)`)
-      .call(yaxis);
+rectGroup.selectAll('rect')
+    .data(data)
+    .enter()
+    .append('rect')
+    .attr('fill','steelblue')
+    .attr('data-date',(d,i)=>xValue(d,i))
+    .attr('data-gdp',(d,i)=>yValue(d,i))
+    .attr('class','bar')
+    .attr('x',(d,i)=>xScale(xValue(d,i)))
+    .attr('y',(d,i)=>yScale(yValue(d,i))+margin.top)
+    .attr('width',xScale.bandwidth())
+    .transition()
+    .delay((d, i) => i * 50)
+    .attr('height',(d,i)=>(innerHeight-yScale(yValue(d,i))))
+    .on('mouseover',mouseover)
+    .on('mouseleave',mouseleave)
+    .on('mousemove',mousemove)
+}
 
-      const xAxis = d3.axisBottom(xScale);
-      svg.append("g")
-      .attr('id','x-axis')
-       .attr("transform", "translate(0," + (height - padding) + ")")
-       .call(xAxis);
-
-       svg.selectAll("rect")
-       .data(dataset)
-       .enter()
-       .append("rect")
-       .attr("x", (d, i) => {
-        const xs = xScale(new Date(d[0]))
-        console.log(new Date(d[0]),xs)
-        return xs
-       })
-       .attr("y", (d,i)=>(yScale(d[1])))
-       .attr("width", 2)
-       .attr("height", (d,i)=>{
-         return height-padding-yScale(d[1])
-       })
-       .attr('class','bar')
-       .attr('data-date',(d)=>d[0])
-       .attr('data-gdp',(d)=>d[1])
-       .on("mouseover", mouseover)
-        .on("mousemove", mousemove)
-        .on("mouseleave", mouseleave)
-      console.log(mindate,mingdp)
-      console.log(maxdate,maxgdp)
-  });
+d3.json('https://raw.githubusercontent.com/freeCodeCamp/ProjectReferenceData/master/GDP-data.json')
+.then((data)=>(data.data))
+.then((data)=>{
+    console.log(data)
+    render(data)
+});
