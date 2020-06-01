@@ -77,12 +77,13 @@ rectGroup.selectAll('rect')
     .attr('x',(d,i)=>xScale(xValue(d,i)))
     .attr('y',(d,i)=>yScale(yValue(d,i))+margin.top)
     .attr('width',xScale.bandwidth())
-    .transition()
-    .delay((d, i) => i * 50)
-    .attr('height',(d,i)=>(innerHeight-yScale(yValue(d,i))))
     .on('mouseover',mouseover)
     .on('mouseleave',mouseleave)
     .on('mousemove',mousemove)
+    .transition()
+    .delay((d, i) => i * 50)
+    .attr('height',(d,i)=>(innerHeight-yScale(yValue(d,i))))
+    
 }
 
 d3.json('https://raw.githubusercontent.com/freeCodeCamp/ProjectReferenceData/master/GDP-data.json')
