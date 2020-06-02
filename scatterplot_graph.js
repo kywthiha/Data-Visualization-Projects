@@ -1,150 +1,156 @@
-fetch('https://raw.githubusercontent.com/freeCodeCamp/ProjectReferenceData/master/cyclist-data.json')
-  .then(response => response.json())
-  .then(data => {
-      const template = "#scatterplot_graph"
-      console.log(data);
-      const width = 800,height = 450,padding = 60
-      const svg = d3.select(template)
-      .append('svg')
-      .attr("viewBox", `0 0 ${width} ${height}`)
-      .style('background-color','pink')
-      
+const render = (data)=>{
+    const width = 800
+    const height = 450
+    const template = "#scatterplot_graph"
+    const margin = { top :50 , bottom : 60 , left: 80 , right : 50 }
+    const innerWidth = width - margin.left - margin.right
+    const innerHeight = height - margin.bottom - margin.top
+    const xValue = (d,i)=>(new Date(d.Year,0))
+    const yValue = (d,i)=>{
+      const virtualdate = new Date(1970,0,1)
+      virtualdate.setSeconds(d.Seconds)
+      return virtualdate
+    }
+    const xAxisLabel = "Year"
+    const yAxisLabel = "Time"
+    const titleLabel = "Doping in Professional Bicycle Racing"
+    const doppingLegendLabel = "Riders with doping allegations"
+    const undoppingLegendLabel = "No doping allegations"
+    const legendRect = 10
+    const tooltipLabel = (d,i)=>(`GDP : ${d3.timeFormat("%M:%S")(yValue(d,i))} Billions <br> ${d3.timeFormat("%Y")(xValue(d,i))}`)
+    
+    const svg = d3.select(template).append('svg')
+    svg.attr("viewBox", `0 0 ${width} ${height}`)
+    const rectGroup = svg.append('g')
+    
+    const  xScaleTime = d3.scaleTime()
+        .domain(d3.extent(data,xValue))
+        .range([0,innerWidth])
+        .nice();
+        
+    const  xAxis = d3.axisBottom(xScaleTime)
+    .tickSize(-innerHeight)
+    .tickPadding(8)
+    .tickSizeOuter(0)
+    const xAxisGroup = svg.append('g')
+    .attr('id','x-axis')
+    .attr('transform',`translate(${margin.left},${innerHeight+margin.top})`)
+    .call(xAxis)
+    
+    xAxisGroup.append('text')
+    .text(xAxisLabel)
+    .attr('fill','black')
+    .attr('x',innerWidth/2)
+    .attr('y',50)
+    .style('text-anchor','middle')
+    
+    
+    const yScale = d3.scaleTime()
+    .domain(d3.extent(data,yValue))
+    .range([innerHeight,0])
+    .nice();
+    
+    const  yAxis = d3.axisLeft(yScale)
+    .tickSize(-innerWidth)
+    .tickPadding(8)
+    .tickFormat(d3.timeFormat('%M:%S'))
+    .tickSizeOuter(0);
+    
+    const yAxisGroup = svg.append('g')
+    .attr('id','y-axis')
+    .attr('transform',`translate(${margin.left},${margin.top})`)
+    .call(yAxis)
+    
+    yAxisGroup.append('text')
+    .text(yAxisLabel)
+    .attr('fill','black')
+    .attr('x',-innerHeight/2)
+    .attr('y',-50)
+    .attr('transform','rotate(-90)')
+    .style('text-anchor','middle')
+    
+    rectGroup.attr('transform',`translate(${margin.left},0)`)
+    
+    const title = rectGroup.append('text')
+    .text(titleLabel)
+    .attr('id','title')
+    .attr('fill','black')
+    .attr('x',innerWidth/2)
+    .attr('y',30)
+    .style('text-anchor','middle')
 
+    const legend = rectGroup.append('g').attr('transform',`translate(${innerWidth-200},${innerHeight-50})`)
+    .attr('id','legend')
+    const doppingLegend = legend.append('g').attr('transform',`translate(${0},${0})`).attr('class','doping')
+    doppingLegend.append('rect')
+    .attr('width',legendRect)
+    .attr('height',legendRect)
+    doppingLegend.append('text')
+    .attr('y',legendRect/2+3)
+    .text(doppingLegendLabel)
+    .attr('x',legendRect+4)
+    const undoppingLegend = legend.append('g').attr('transform',`translate(${0},${legendRect+10})`).attr('class','undoping')
+    undoppingLegend.append('rect')
+    .attr('width',legendRect)
+    .attr('height',legendRect)
+    undoppingLegend.append('text')
+    .attr('y',legendRect/2+3)
+    .text(undoppingLegendLabel)
+    .attr('x',legendRect+4)
 
-      const maxyear = d3.max(data,(d)=>d.Year)
-      const minyear = d3.min(data,(d)=>d.Year)
-      const maxtime = d3.max(data,(d)=>d.Seconds)
-      const mintime = d3.min(data,(d)=>d.Seconds)
-
-      const xScale = d3.scaleTime()
-        .domain([new Date(minyear-1,0),new Date(maxyear+1,0)])
-        .range([padding,width-padding])
-      const xAxis = d3.axisBottom(xScale);
-
-      svg.append("g")
-        .attr("transform", `translate(0,${height-padding})`)
-        .attr('id','x-axis')
-        .call(xAxis);
-      const timeminute = ({Seconds})=>{
-          const temp = new Date(1970, 0, 1, 0)
-          temp.setSeconds(Seconds)
-          return temp
-        }
-
-        const yScale = d3.scaleTime()
-        .domain([timeminute({Seconds:mintime}),timeminute({Seconds:maxtime})])
-        .range([height-padding,padding])
-
-        const yAxis = d3.axisLeft(yScale)
-        .tickFormat((d,i)=>{
-          return d3.timeFormat("%M:%S")(d);
-        });
-        svg.append("g")
-        .attr("transform", `translate(${padding},0)`)
-        .attr('id','y-axis')
-        .call(yAxis);
-
-        const Tooltip = d3.select(template)
-        .append("div")
+    const Tooltip = d3.select(template)
+    .append("div")
+    .style("opacity", 0)
+    .attr('id','tooltip')
+    .attr("class", "tooltip")
+    
+    const mouseover = function(d,i) {
+     
+      Tooltip
+        .html(tooltipLabel(d,i))
+        .attr('data-year',xValue(d,i))
+        .style("opacity", 1)
+      d3.select(this)
+        .style("stroke", "#205493")
+        .style("opacity", 1)
+    }
+    const mousemove = function(d) {
+      Tooltip
+        .style("left", (d3.event.pageX)+10 + "px")
+        .style("top", (d3.event.pageY)-3 + "px")
+    }
+    const mouseleave = function(d) {
+      Tooltip
         .style("opacity", 0)
-        .attr('id','tooltip')
-        .attr("class", "tooltip")
-  
-        const mouseover = function(d) {
-          let str = ""
-          if(d.hasOwnProperty('Name') && d.hasOwnProperty('Nationality') && d.hasOwnProperty('Year') && d.hasOwnProperty('Time')){
-            if(d['Name'] && d['Nationality'] && d['Year']){
-              str += d['Name'] +":"+d['Nationality']+"<br>"+ "Year : "+d['Year'] +","+"Time : "+d['Time']
-            }
-          }
-          if(d.hasOwnProperty('Doping')){
-            if(d['Doping']){
-              str += `<br>Doping : <i style="color:blue">${d['Doping']}</i>`
-            }
-          }
-          Tooltip
-            .html(`${str}`)
-            .attr('data-year',new Date(d.Year,0))
-            .style("opacity", 1)
-          d3.select(this)
-            .style("stroke", "black")
-            .style("opacity", 1)
-        }
-        const mousemove = function(d) {
-          Tooltip
-            .style("left", (d3.event.pageX)+10 + "px")
-            .style("top", (d3.event.pageY)-3 + "px")
-        }
-        const mouseleave = function(d) {
-          Tooltip
-            .style("opacity", 0)
-          d3.select(this)
-            .style("stroke", "none")
-            .style("opacity", 0.8)
-        }
+      d3.select(this)
+        .style("stroke", "none")
+        .style("opacity", 0.8)
+    }
 
-        svg.selectAll('circle')
+    rectGroup.selectAll('circle')
         .data(data)
         .enter()
         .append('circle')
-        .attr('class','dot')
-        .attr('data-xvalue',(d,i)=>{
-          return new Date(d.Year,0)
-        })
-        .attr('data-yvalue',(d,i)=>{
-          return timeminute({Seconds:d.Seconds});
-        })
-        .attr('cx',(d,i)=>xScale(new Date(d.Year,0)))
-        .attr('cy',(d,i)=>{
-          return yScale(timeminute({Seconds:d.Seconds}))
-        })
-        .attr('r',6)
-        .style('fill',(d,i)=>(d.Doping ? 'blue':'red'))
-        .on("mouseover", mouseover)
-        .on("mousemove", mousemove)
-        .on("mouseleave", mouseleave)
-
-
-        svg.append('text')
-        .text("Time in Minutes")
-        .attr('transform','rotate(-90)')
-        .attr('font-size',12)
-        .attr('x',-height+150)
-        .attr('y',padding-40)
-
-
-        const legend = svg.append("g")
-        .attr("id", 'legend')
-        .attr("transform", `translate(${width-250},${height-150})`)
-        console.log(legend)
-        legend.append('text')
-        .text('No doping allegations')
-        .style('text-anchor','end')
-        .attr('x',170)
-        .attr('y',10)
-
-        legend.append('rect')
-        .attr('width',10)
-        .attr('fill','red')
-        .attr('height',10)
-        .attr('x',172)
-        .attr('y',0)
-
-        legend.append('text')
-        .text('Riders with doping allegations')
-        .style('text-anchor','end')
-        .attr('x',170)
-        .attr('y',40)
-
-        legend.append('rect')
-        .attr('width',10)
-        .attr('fill','blue')
-        .attr('height',10)
-        .attr('x',172)
-        .attr('y',30)
-
-
-       
-
-
-  });
+        .attr('r',5)
+        .attr('fill','#97BCE9')
+        .attr('data-xvalue',(d,i)=>xValue(d,i))
+        .attr('data-yvalue',(d,i)=>yValue(d,i))
+        .attr('class',(d,i)=>d.Doping?"dot doping":"dot undoping")
+        .attr('cx',0)
+        .attr('cy',margin.top)
+        .on('mouseover',mouseover)
+        .on('mouseleave',mouseleave)
+        .on('mousemove',mousemove)
+        .transition()
+        .delay((d,i)=>i*300)
+        .attr('cx',(d,i)=>xScaleTime(xValue(d,i)))
+        .attr('cy',(d,i)=>yScale(yValue(d,i))+margin.top)
+        
+        
+    }
+    
+    d3.json('https://raw.githubusercontent.com/freeCodeCamp/ProjectReferenceData/master/cyclist-data.json')
+    .then((data)=>{
+      console.log(data)
+        render(data)
+    })

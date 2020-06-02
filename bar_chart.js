@@ -7,6 +7,10 @@ const innerWidth = width - margin.left - margin.right
 const innerHeight = height - margin.bottom - margin.top
 const xValue = (d,i)=>(d[0])
 const yValue = (d,i)=>(d[1])
+const xAxisLabel = "http://www.bea.gov/national/pdf/nipaguid.pdf"
+const yAxisLabel = "Gross-Domestic-Product-1-Decimal"
+const titleLabel = "United States GDP"
+const tooltipLabel = (d,i)=>(`GDP : $${yValue(d,i)} Billions <br> ${d3.timeFormat("%B %d, %Y")(new Date(xValue(d,i)))} Q${new Date(xValue(d,i)).getMonth()/3+1}`)
 
 const svg = d3.select(template).append('svg')
 svg.attr("viewBox", `0 0 ${width} ${height}`)
@@ -20,6 +24,7 @@ const xScale = d3.scaleBand()
 const  xScaleTime = d3.scaleTime()
     .domain([d3.min(data,(d,i)=>new Date(xValue(d,i))), d3.max(data,(d,i)=>new Date(xValue(d,i)))])
     .range([0,innerWidth]);
+    
 const  xAxis = d3.axisBottom(xScaleTime)
 .tickSizeOuter(0)
 const xAxisGroup = svg.append('g')
@@ -28,10 +33,11 @@ const xAxisGroup = svg.append('g')
 .call(xAxis)
 
 xAxisGroup.append('text')
-.text("http://www.bea.gov/national/pdf/nipaguid.pdf")
+.text(xAxisLabel)
 .attr('fill','black')
 .attr('x',innerWidth/2)
-.attr('y',margin.bottom-10)
+.attr('y',50)
+.style('text-anchor','middle')
 
 
 const yScale = d3.scaleLinear()
@@ -48,20 +54,22 @@ const yAxisGroup = svg.append('g')
 .call(yAxis)
 
 yAxisGroup.append('text')
-.text("Gross-Domestic-Product-1-Decimal")
+.text(yAxisLabel)
 .attr('fill','black')
-.attr('x',-innerHeight/2 +50)
-.attr('y',-margin.left/2)
+.attr('x',-innerHeight/2)
+.attr('y',-50)
 .attr('transform','rotate(-90)')
+.style('text-anchor','middle')
 
 rectGroup.attr('transform',`translate(${margin.left},0)`)
 
 const title = rectGroup.append('text')
-.text("United States GDP")
+.text(titleLabel)
 .attr('id','title')
 .attr('fill','black')
-.attr('x',innerWidth/2-150)
-.attr('y',margin.top/2)
+.attr('x',innerWidth/2)
+.attr('y',30)
+.style('text-anchor','middle')
 
 
 const Tooltip = d3.select(template)
@@ -73,7 +81,7 @@ const Tooltip = d3.select(template)
 const mouseover = function(d,i) {
  
   Tooltip
-    .html(`GDP : $${yValue(d,i)} Billions <br> ${d3.timeFormat("%B %d, %Y")(new Date(xValue(d,i)))} Q${new Date(xValue(d,i)).getMonth()/3+1}`)
+    .html(tooltipLabel(d,i))
     .attr('data-date',xValue(d,i))
     .style("opacity", 1)
   d3.select(this)
