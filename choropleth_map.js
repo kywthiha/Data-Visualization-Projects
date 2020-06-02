@@ -8,21 +8,42 @@ const render = ({usgeo,usEdu,edu})=>{
 
     const svg = d3.select(template).append('svg')
     svg.attr("viewBox", [0, 0, width, height])
-    const colorScale = d3.scaleOrdinal();
-    colorScale.domain(d3.range(1,10,1))
-    .range(d3.schemeBlues[9])
+    const eduextent = d3.extent(edu.map((d,i)=>d.bachelorsOrHigher))
+
+    const colorScale = d3.scaleThreshold().
+        domain(d3.range(eduextent[0], eduextent[1], (eduextent[1] - eduextent[0]) / 9)).
+        range(d3.schemeGreens[9]);
+
     const colorValue = (d,i) => colorScale(usEdu[d.id].bachelorsOrHigher)
     const eduValue = (d,i) =>usEdu[d.id];
 
-    // const axisBootom = d3.axisBottom(colorScale)
-    // .ticks(5)
-    // .tickSize(-innerHeight)
-    // .tickPadding(8)
-    // .tickSizeOuter(0)
+    const colorLegend = svg.append('g')
+    .attr('id','legend')
+    .attr('transform',`translate(${width-420},${10})`)
+    const legnedHeight = 30
 
-    // svg.append('g')
-    // .attr('transform',`translate(${20},${20})`)
-    // .call(axisBootom)
+    const colorScaleLinear = d3.scaleLinear()
+    .domain([-1, colorScale.range().length - 1])
+    .rangeRound([10, 300])
+
+    colorLegend.append("g")
+      .selectAll("rect")
+      .data(colorScale.range())
+      .join("rect")
+        .attr("x", (d,i)=>colorScaleLinear(i-1))
+        .attr("width", (d,i)=>colorScaleLinear(i)-colorScaleLinear(i-1))
+        .attr("height", legnedHeight)
+        .attr("fill", (d,i)=>d);
+
+        const axisBootom = d3.axisBottom(colorScaleLinear)
+        .tickSize(-legnedHeight)
+        .tickValues(d3.range(-1,colorScale.domain().length-1)) 
+        .tickFormat((d,i)=>Math.round(colorScale.domain()[i])+"%")
+    
+        colorLegend.append('g')
+        .attr('transform',`translate(${0},${legnedHeight})`)
+        .call(axisBootom)
+        .select('.domain').remove()
 
     const tooltipLabel = (d,i)=>{
         const eduEach = eduValue(d,i)
@@ -39,6 +60,7 @@ const render = ({usgeo,usEdu,edu})=>{
      
       Tooltip
         .html(tooltipLabel(d,i))
+        .attr('data-education',eduValue(d,i).bachelorsOrHigher)
         .style("opacity", 1)
       d3.select(this)
         .style("stroke", "#205493")
@@ -58,14 +80,18 @@ const render = ({usgeo,usEdu,edu})=>{
     }
 
     const path = d3.geoPath();
-    const mapgroups = svg.append('g').attr('class','map').attr('width',100)
+    const mapgroups = svg.append('g')
+    .attr('class','map')
+    .attr('width',100)
+
     mapgroups.selectAll("path")
         .data(usgeo.features)
         .enter().append("path")
         .attr("d", path)
-        .attr("width", width)
-        .attr("height", height)
-        .attr('fill',(d,i)=>(colorValue(d,i)))
+        .attr('class','county')
+        .attr('fill',(d,i)=> colorValue(d,i))
+        .attr('data-fips',(d,i)=>d.id)
+        .attr('data-education',(d,i)=>eduValue(d,i).bachelorsOrHigher)
         .attr('stroke-width',0.1)
         .attr('stroke','steelblue')
         .on('mouseover',mouseover)
@@ -80,17 +106,10 @@ const render = ({usgeo,usEdu,edu})=>{
 
 }
 
-const ready = (error,edu,us)=>{
-    console.log("hi")
-    alert("HI")
-    console.log(edu)
-    console.log(us)
-}
 Promise.all([
     d3.json("https://cdn.freecodecamp.org/testable-projects-fcc/data/choropleth_map/for_user_education.json"),
     d3.json("https://cdn.freecodecamp.org/testable-projects-fcc/data/choropleth_map/counties.json")
 ]).then(([edu,us])=>{
-    console.log("start")
     const usgeo = topojson.feature(us, us.objects.counties)
     const usEdu = edu.reduce((acc,d)=>{
         acc[d.fips] = {
@@ -101,9 +120,6 @@ Promise.all([
         }
         return acc;
     },{})
-    for(let i = 0;i<10;i++){
-        console.log(usEdu[usgeo.features[i].id])
-    }
-    console.log("end")
+    
     render({usgeo,usEdu,edu})
 })
