@@ -1,0 +1,21 @@
+body{
+    text-align: center;
+}
+.container{
+    margin-top: 20px;
+}
+.tooltip {	
+position: absolute;			
+text-align: center;								
+padding: 2px;				
+font: 1rem sans-serif;		
+background: #112E51;	
+color:#C1D7F2;
+border: 0px;		
+border-radius: 8px;			
+pointer-events: none;			
+}
+.map path{
+    cursor: pointer;
+}
+
