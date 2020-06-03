@@ -6,9 +6,13 @@ body {
     margin-top: 20px;
 }
 
-svg {
-    font: 10px sans-serif;
-    text-align: center;
+.bar {
+    fill: blue;
+    cursor: pointer;
+}
+
+.bar:hover {
+    fill: #205493;
 }
 
 .tooltip {
@@ -23,20 +27,15 @@ svg {
     pointer-events: none;
 }
 
-.tile:hover {
-    cursor: pointer;
-}
-
-text,
-#description {
+text {
     color: #205493;
     fill: #205493;
     font-family: sans-serif;
 }
 
 #title {
-    color: #205493;
     font-family: sans-serif;
+    font-size: 2rem;
 }
 
 #y-axis line,

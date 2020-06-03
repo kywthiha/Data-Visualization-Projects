@@ -6,9 +6,12 @@ body {
     margin-top: 20px;
 }
 
-svg {
-    font: 10px sans-serif;
-    text-align: center;
+.cell {
+    cursor: pointer;
+}
+
+.cell:hover {
+    fill: #205493;
 }
 
 .tooltip {
@@ -23,23 +26,20 @@ svg {
     pointer-events: none;
 }
 
-.tile:hover {
-    cursor: pointer;
-}
-
-text,
-#description {
+text {
     color: #205493;
     fill: #205493;
     font-family: sans-serif;
 }
 
-#title {
+#title,
+#description {
     color: #205493;
     font-family: sans-serif;
+    font-size: 2rem;
 }
 
-#y-axis line,
-#y-axis .domain {
+line,
+.domain {
     stroke: #C1D7F2;
 }

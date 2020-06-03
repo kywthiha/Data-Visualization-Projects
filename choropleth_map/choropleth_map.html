@@ -1,25 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
+    <meta name="description" content="Visualize Data with a Choropleth Map">
+    <meta name="keywords" content="HTML, CSS, JavaScript, D3 , Visualize Data">
+    <meta name="author" content="Kyaw Thi Ha">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Data Visualization Projects - Visualize Data with a Bar Chart</title>
+    <title>Visualize Data with a Choropleth Map</title>
     <link rel="stylesheet" href="https://unpkg.com/bootstrap@4.1.0/dist/css/bootstrap.min.css">
     <script src="https://unpkg.com/jquery@3.3.1/dist/jquery.min.js"></script>
     <link rel="stylesheet" href="choropleth_map.css">
 </head>
+
 <body>
-    <script src="./header.js"></script>
+    <script src="../header.js"></script>
     <div class="container">
         <h1 id="title">United States Educational Attainment</h1>
         <div id="description">Percentage of adults age 25 and older with a bachelor's degree or higher (2010-2014)</div>
-        <div id="scatterplot_graph"></div>
+        <div id="choropleth_map"></div>
     </div>
-    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <script src="https://unpkg.com/d3@5.16.0/dist/d3.min.js"></script>
     <script src="https://unpkg.com/topojson-client@3"></script>
     <script src="https://cdn.freecodecamp.org/testable-projects-fcc/v1/bundle.js"></script>
-    <script src="https://unpkg.com/popper.js@1.12.8/dist/popper.min.js"></script>
     <script src="https://unpkg.com/bootstrap@4.3.1/dist/js/bootstrap.min.js"></script>
     <script src="choropleth_map.js"></script>
 </body>
+
 </html>

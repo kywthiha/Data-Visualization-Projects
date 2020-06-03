@@ -6,16 +6,11 @@ body {
     margin-top: 20px;
 }
 
-svg {
-    font: 10px sans-serif;
-    text-align: center;
-}
-
 .tooltip {
     position: absolute;
     text-align: center;
     padding: 2px;
-    font: 12px sans-serif;
+    font: 1rem sans-serif;
     background: #112E51;
     color: #C1D7F2;
     border: 0px;
@@ -23,23 +18,23 @@ svg {
     pointer-events: none;
 }
 
-.tile:hover {
+.map path {
     cursor: pointer;
 }
 
-text,
 #description {
     color: #205493;
-    fill: #205493;
-    font-family: sans-serif;
+    font-family: Arial;
+    font-size: 1rem;
+}
+
+text,
+.tick line {
+    color: #205493;
 }
 
 #title {
     color: #205493;
     font-family: sans-serif;
-}
-
-#y-axis line,
-#y-axis .domain {
-    stroke: #C1D7F2;
+    font-size: 2rem;
 }
